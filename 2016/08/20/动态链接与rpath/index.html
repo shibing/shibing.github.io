@@ -68,7 +68,7 @@
 <link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="Hexo, NexT" />
+  <meta name="keywords" content="gcc,linux," />
 
 
 
@@ -84,12 +84,16 @@
 
 
 
-<meta property="og:type" content="website">
-<meta property="og:title" content="Stone's Blog">
-<meta property="og:url" content="http://shibing.github.io/index.html">
+<meta name="description" content="最近在工作中做php环境的绿色安装，所谓绿色安装是指将程序以及它的所有依赖包括一些共享库、配置文件等打包到一起然后进行安装的方式。因为所有的依赖都打包到了一起，那么部署的过程其实就是简单的拷贝过程，非常的方便。但是这之中遇到了一个问题，就是如何让php运行的时候加载我们绿色包里面的共享库，而不是加载系统自身的共享库。为此学习了linux下运行时链接器器搜索共享库的方式，发现通过指定RPATH可以很">
+<meta property="og:type" content="article">
+<meta property="og:title" content="动态链接与rpath">
+<meta property="og:url" content="http://shibing.github.io/2016/08/20/动态链接与rpath/index.html">
 <meta property="og:site_name" content="Stone's Blog">
+<meta property="og:description" content="最近在工作中做php环境的绿色安装，所谓绿色安装是指将程序以及它的所有依赖包括一些共享库、配置文件等打包到一起然后进行安装的方式。因为所有的依赖都打包到了一起，那么部署的过程其实就是简单的拷贝过程，非常的方便。但是这之中遇到了一个问题，就是如何让php运行的时候加载我们绿色包里面的共享库，而不是加载系统自身的共享库。为此学习了linux下运行时链接器器搜索共享库的方式，发现通过指定RPATH可以很">
+<meta property="og:updated_time" content="2016-08-20T08:21:55.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Stone's Blog">
+<meta name="twitter:title" content="动态链接与rpath">
+<meta name="twitter:description" content="最近在工作中做php环境的绿色安装，所谓绿色安装是指将程序以及它的所有依赖包括一些共享库、配置文件等打包到一起然后进行安装的方式。因为所有的依赖都打包到了一起，那么部署的过程其实就是简单的拷贝过程，非常的方便。但是这之中遇到了一个问题，就是如何让php运行的时候加载我们绿色包里面的共享库，而不是加载系统自身的共享库。为此学习了linux下运行时链接器器搜索共享库的方式，发现通过指定RPATH可以很">
 
 
 
@@ -110,9 +114,9 @@
 
 
 
-  <link rel="canonical" href="http://shibing.github.io/"/>
+  <link rel="canonical" href="http://shibing.github.io/2016/08/20/动态链接与rpath/"/>
 
-  <title> Stone's Blog </title>
+  <title> 动态链接与rpath | Stone's Blog </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -133,9 +137,7 @@
     
   
 
-  <div class="container one-collumn sidebar-position-left 
-   page-home 
- ">
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -212,9 +214,9 @@
         <div class="content-wrap">
           <div id="content" class="content">
             
-  <section id="posts" class="posts-expand">
+
+  <div id="posts" class="posts-expand">
     
-      
 
   
   
@@ -234,10 +236,7 @@
             
             
               
-                
-                <a class="post-title-link" href="/2016/08/20/动态链接与rpath/" itemprop="url">
-                  动态链接与rpath
-                </a>
+                动态链接与rpath
               
             
           </h1>
@@ -284,9 +283,7 @@
       
 
       
-        
-          
-            <p>最近在工作中做<code>php</code>环境的绿色安装，所谓绿色安装是指将程序以及它的所有依赖包括一些共享库、配置文件等打包到一起然后进行安装的方式。因为所有的依赖都打包到了一起，那么部署的过程其实就是简单的拷贝过程，非常的方便。但是这之中遇到了一个问题，就是如何让<code>php</code>运行的时候加载我们绿色包里面的共享库，而不是加载系统自身的共享库。为此学习了<code>linux</code>下运行时链接器器搜索共享库的方式，发现通过指定<code>RPATH</code>可以很方便的解决这个问题。</p>
+        <p>最近在工作中做<code>php</code>环境的绿色安装，所谓绿色安装是指将程序以及它的所有依赖包括一些共享库、配置文件等打包到一起然后进行安装的方式。因为所有的依赖都打包到了一起，那么部署的过程其实就是简单的拷贝过程，非常的方便。但是这之中遇到了一个问题，就是如何让<code>php</code>运行的时候加载我们绿色包里面的共享库，而不是加载系统自身的共享库。为此学习了<code>linux</code>下运行时链接器器搜索共享库的方式，发现通过指定<code>RPATH</code>可以很方便的解决这个问题。</p>
 <h1 id="RPATH"><a href="#RPATH" class="headerlink" title="RPATH"></a><code>RPATH</code></h1><p>linux下在链接共享库的时候可以通过<code>rpath</code>选项来指定<strong>运行时</strong>共享库加载路径。 通过这个选项指定的路径会写到ELF文件<code>dynamic</code>段的<code>RPATH</code>里, 运行时链接器会在此路径下搜索ELF文件所依赖的共享库。</p>
 <h1 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h1><p>假设我们有一个共享库<code>libarith.so</code>，提供了常见的算术运算，它由<code>arith.h</code>与<code>arith.c</code>两个文件编译生成。内容如下：</p>
 <p><code>arith.h</code>:<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">pragma</span> once</span></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">add</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span></span>;</div></pre></td></tr></table></figure></p>
@@ -305,36 +302,46 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ pathelf  main --set-rpath=&apos;$ORIGIN/&apos;</div></pre></td></tr></table></figure>
 <h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>上面介绍了<code>RPATH</code>的作用，如何在编译的时候通过相关参数指定<code>RPATH</code>，以及使用<code>patchelf</code>修改<code>RPATH</code>的方法。</p>
 
-          
+      
+    </div>
+
+    <div>
+      
         
       
     </div>
 
     <div>
       
-    </div>
+        
 
-    <div>
       
     </div>
 
     <footer class="post-footer">
       
-
+        <div class="post-tags">
+          
+            <a href="/tags/gcc/" rel="tag">#gcc</a>
+          
+            <a href="/tags/linux/" rel="tag">#linux</a>
+          
+        </div>
       
 
       
+
       
-        <div class="post-eof"></div>
       
     </footer>
   </article>
 
 
-    
-  </section>
 
-  
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
 
           </div>
@@ -342,6 +349,14 @@
 
 
           
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/08/20/动态链接与rpath/"
+           data-title="动态链接与rpath" data-url="http://shibing.github.io/2016/08/20/动态链接与rpath/">
+      </div>
+    
+  </div>
+
 
         </div>
         
@@ -361,8 +376,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview sidebar-panel  sidebar-panel-active ">
+      <section class="site-overview sidebar-panel ">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="/uploads/avatar.png"
@@ -416,6 +440,17 @@
 
       </section>
 
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#RPATH"><span class="nav-number">1.</span> <span class="nav-text">RPATH</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#示例"><span class="nav-number">2.</span> <span class="nav-text">示例</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ORIGIN"><span class="nav-number">3.</span> <span class="nav-text">$ORIGIN</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#patchelf命令"><span class="nav-number">4.</span> <span class="nav-text">patchelf命令</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+          </div>
+        </section>
       
 
     </div>
@@ -519,6 +554,10 @@
 
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
 
   
 
